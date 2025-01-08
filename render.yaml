@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ai-market-monitor
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai-market-db
+          property: connectionString
+      - key: CBINSIGHTS_API_KEY
+        sync: false
+      - key: AZURE_CREDENTIALS
+        sync: false
+      - key: AWS_ACCESS_KEY
+        sync: false
+      - key: AWS_SECRET_KEY
+        sync: false
+      - key: GCP_CREDENTIALS
+        sync: false
+
+databases:
+  - name: ai-market-db
+    databaseName: ai_market
+    plan: starter 
