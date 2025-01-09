@@ -9,6 +9,7 @@ from typing import List, Dict
 import os
 from dotenv import load_dotenv
 import logging
+from fastapi.middleware.cors import CORSMiddleware
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -112,3 +113,21 @@ async def startup_event():
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")
         raise 
+
+@app.get("/")
+async def root():
+    return {
+        "status": "online",
+        "endpoints": {
+            "health": "/health",
+            "nvidia_metrics": "/api/metrics/nvidia?start_date=2023Q1&end_date=2024Q1"
+        }
+    } 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+) 
