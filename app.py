@@ -14,21 +14,34 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize FastAPI app
+app = FastAPI()
+
 # Load environment variables
 load_dotenv()
 
 # Get database URL from environment variable
 DATABASE_URL = os.getenv("DATABASE_URL")
+logger.info(f"Database URL present: {bool(DATABASE_URL)}")
 
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable is not set")
+    logger.error("DATABASE_URL environment variable is not set")
+    DATABASE_URL = "sqlite:///./test.db"  # Fallback for development
+    logger.info("Using fallback database")
 
 # Add PostgreSQL driver prefix if not present
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    logger.info("Updated database URL to use postgresql:// prefix")
 
 # Create database engine
-engine = create_engine(DATABASE_URL)
+try:
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    logger.info("Database engine created successfully")
+except Exception as e:
+    logger.error(f"Failed to create database engine: {e}")
+    raise
 
 Base = declarative_base()
 

@@ -2,17 +2,18 @@ services:
   - type: web
     name: ai-stock-tracker
     env: python
-    buildCommand: |
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: ai-crash-detector-db
           property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.0
 
 databases:
   - name: ai-crash-detector-db
     databaseName: ai_crash_detector
-    plan: starter 
+    plan: starter
+    ipAllowList: []  # optional, allow all IPs 
