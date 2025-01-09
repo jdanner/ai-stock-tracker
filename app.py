@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, desc
@@ -87,7 +87,7 @@ async def fetch_nvidia_data():
         return mock_data
 
 @app.get("/", response_class=HTMLResponse)
-async def root(request):
+async def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/api/nvidia")
