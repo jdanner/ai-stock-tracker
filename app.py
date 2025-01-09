@@ -1,5 +1,5 @@
-from fastapi import FastAPI, HTTPException
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+from fastapi import FastAPI, HTTPException, BackgroundTasks
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, desc
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -66,35 +66,81 @@ class NvidiaOrdersBreakdown(Base):
     percentage_of_total = Column(Float)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-async def fetch_nvidia_data():
-    """
-    Fetch NVIDIA financial data and major customer orders
-    """
+async def fetch_nvidia_quarterly_data():
+    """Fetch NVIDIA's quarterly financial data"""
     try:
         nvda = yf.Ticker("NVDA")
-        quarterly_data = nvda.quarterly_financials
-        return {
-            "financials": quarterly_data,
-            "quarter": quarterly_data.columns[0].strftime("%Y-Q%q")
-        }
+        quarterly_revenue = nvda.quarterly_financials.loc['Total Revenue']
+        
+        data = []
+        for date, value in quarterly_revenue.items():
+            quarter = f"{date.year}Q{(date.month-1)//3 + 1}"
+            data.append({
+                "quarter": quarter,
+                "metric_type": "nvidia_revenue",
+                "value": float(value),
+                "source": "yfinance"
+            })
+        return data
     except Exception as e:
         logger.error(f"Error fetching NVIDIA data: {e}")
         return None
 
-@app.get("/api/metrics/nvidia")
-async def get_nvidia_metrics(start_date: str, end_date: str):
+async def store_quarterly_data(data: List[Dict]):
+    """Store quarterly data in database"""
     db = SessionLocal()
     try:
-        metrics = {
-            "orders": db.query(QuarterlyMetrics).filter(
-                QuarterlyMetrics.metric_type == "nvidia_orders",
-                QuarterlyMetrics.quarter.between(start_date, end_date)
-            ).all(),
-            "breakdown": db.query(NvidiaOrdersBreakdown).filter(
-                NvidiaOrdersBreakdown.quarter.between(start_date, end_date)
-            ).all()
+        for item in data:
+            metric = QuarterlyMetrics(
+                quarter=item["quarter"],
+                metric_type=item["metric_type"],
+                value=item["value"],
+                source=item["source"]
+            )
+            db.add(metric)
+        db.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error storing data: {e}")
+        db.rollback()
+        return False
+    finally:
+        db.close()
+
+@app.post("/api/data/refresh")
+async def refresh_data(background_tasks: BackgroundTasks):
+    """Refresh all data sources"""
+    try:
+        # Fetch NVIDIA data
+        nvidia_data = await fetch_nvidia_quarterly_data()
+        if nvidia_data:
+            await store_quarterly_data(nvidia_data)
+            return {"status": "success", "message": "Data refresh initiated"}
+        else:
+            raise HTTPException(status_code=500, message="Failed to fetch NVIDIA data")
+    except Exception as e:
+        logger.error(f"Error in refresh_data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/metrics/nvidia")
+async def get_nvidia_metrics(start_date: str, end_date: str):
+    """Get NVIDIA metrics between quarters"""
+    db = SessionLocal()
+    try:
+        metrics = db.query(QuarterlyMetrics).filter(
+            QuarterlyMetrics.metric_type == "nvidia_revenue",
+            QuarterlyMetrics.quarter.between(start_date, end_date)
+        ).order_by(desc(QuarterlyMetrics.quarter)).all()
+        
+        return {
+            "revenue": [
+                {
+                    "quarter": m.quarter,
+                    "value": m.value,
+                    "source": m.source
+                } for m in metrics
+            ]
         }
-        return metrics
     finally:
         db.close()
 
