@@ -1,4 +1,7 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, desc
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -16,6 +19,9 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI()
+
+# Set up templates
+templates = Jinja2Templates(directory="templates")
 
 # Database setup
 load_dotenv()
@@ -44,20 +50,29 @@ async def fetch_nvidia_data():
         
         data = []
         for date in financials.columns:
-            quarter = f"{date.year}Q{(date.month-1)//3 + 1}"
-            metrics = {
-                'quarter': quarter,
-                'revenue': float(financials.loc['Total Revenue', date]),
-                'net_income': float(financials.loc['Net Income', date]),
-                'gross_margin': float(financials.loc['Gross Profit', date]) / float(financials.loc['Total Revenue', date]) * 100
-            }
-            data.append(metrics)
+            try:
+                quarter = f"{date.year}Q{(date.month-1)//3 + 1}"
+                metrics = {
+                    'quarter': quarter,
+                    'revenue': float(financials.loc['Total Revenue', date]),
+                    'net_income': float(financials.loc['Net Income', date]),
+                    'gross_margin': float(financials.loc['Gross Profit', date]) / float(financials.loc['Total Revenue', date]) * 100
+                }
+                data.append(metrics)
+            except Exception as e:
+                logger.error(f"Error processing quarter {quarter}: {e}")
+                continue
+                
         return sorted(data, key=lambda x: x['quarter'], reverse=True)
     except Exception as e:
         logger.error(f"Error fetching NVIDIA data: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch NVIDIA data: {str(e)}")
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
+async def root(request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/api/nvidia")
 async def get_nvidia_metrics():
     """Get latest NVIDIA metrics"""
     try:

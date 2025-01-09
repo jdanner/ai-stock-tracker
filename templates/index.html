@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NVIDIA Financial Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chart {
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #76b900; /* NVIDIA green */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NVIDIA Financial Metrics</h1>
+        <div id="revenueChart" class="chart"></div>
+        <div id="netIncomeChart" class="chart"></div>
+        <div id="marginChart" class="chart"></div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/api/nvidia');
+            const data = await response.json();
+            return data.data;
+        }
+
+        function createChart(data, metric, title, divId, color) {
+            const trace = {
+                x: data.map(d => d.quarter),
+                y: data.map(d => d[metric]),
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: {color: color},
+                name: title
+            };
+
+            const layout = {
+                title: title,
+                xaxis: {title: 'Quarter'},
+                yaxis: {title: metric === 'gross_margin' ? 'Percentage (%)' : 'Billions USD'},
+                showlegend: false
+            };
+
+            Plotly.newPlot(divId, [trace], layout);
+        }
+
+        async function initCharts() {
+            const data = await fetchData();
+            
+            // Convert revenue and net income to billions
+            data.forEach(d => {
+                d.revenue = d.revenue / 1e9;
+                d.net_income = d.net_income / 1e9;
+            });
+
+            createChart(data, 'revenue', 'Quarterly Revenue', 'revenueChart', '#76b900');
+            createChart(data, 'net_income', 'Net Income', 'netIncomeChart', '#1a73e8');
+            createChart(data, 'gross_margin', 'Gross Margin', 'marginChart', '#ea4335');
+        }
+
+        initCharts();
+    </script>
+</body>
+</html> 
