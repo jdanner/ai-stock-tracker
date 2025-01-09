@@ -10,23 +10,26 @@ import os
 from dotenv import load_dotenv
 import logging
 
-# Load .env file if it exists (local development)
-if os.path.exists(".env"):
-    load_dotenv()
-
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+# Load environment variables
+load_dotenv()
 
-# Use Render's internal DATABASE_URL if available
+# Get database URL from environment variable
 DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is not set")
+
+# Add PostgreSQL driver prefix if not present
+if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
+# Create database engine
 engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
+
 Base = declarative_base()
 
 class QuarterlyMetrics(Base):
