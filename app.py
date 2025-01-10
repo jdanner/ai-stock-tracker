@@ -73,30 +73,42 @@ async def fetch_nvidia_data():
             {
                 'quarter': '2025Q3', 'revenue': 35082000000, 
                 'net_income': 9243000000, 'gross_margin': 74.0,
-                'customer_concentration': [
-                    {'customer': 'Customer A', 'percentage': 19}
-                ]
+                'customer_concentration': 36  # 12%+12%+12%
             },
             {
                 'quarter': '2025Q2', 'revenue': 30040000000,
                 'net_income': 6188000000, 'gross_margin': 70.1,
-                'customer_concentration': [
-                    {'customer': 'Customer A', 'percentage': 18}
-                ]
+                'customer_concentration': 45  # 11%+11%+11%+12%
             },
             {
                 'quarter': '2025Q1', 'revenue': 26044000000,
                 'net_income': 2043000000, 'gross_margin': 64.6,
-                'customer_concentration': [
-                    {'customer': 'Customer A', 'percentage': 14}
-                ]
+                'customer_concentration': 45  # 11%+11%+11%+12%
             },
             {
                 'quarter': '2024Q4', 'revenue': 22103000000,
                 'net_income': 1410000000, 'gross_margin': 63.3,
-                'customer_concentration': [
-                    {'customer': 'Customer A', 'percentage': 13}
-                ]
+                'customer_concentration': 0  # Need to find
+            },
+            {
+                'quarter': '2024Q3', 'revenue': 18120000000,
+                'net_income': 1336000000, 'gross_margin': 62.7,
+                'customer_concentration': 19  # One customer
+            },
+            {
+                'quarter': '2024Q2', 'revenue': 13507000000,
+                'net_income': 1618000000, 'gross_margin': 64.8,
+                'customer_concentration': 18  # One customer
+            },
+            {
+                'quarter': '2024Q1', 'revenue': 7192000000,
+                'net_income': 1912000000, 'gross_margin': 65.5,
+                'customer_concentration': 14  # One customer
+            },
+            {
+                'quarter': '2023Q4', 'revenue': 6051000000,
+                'net_income': 1788000000, 'gross_margin': 65.4,
+                'customer_concentration': 13  # One customer
             }
         ]
         

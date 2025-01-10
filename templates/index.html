@@ -19,12 +19,13 @@
         }
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 200px);
             gap: 20px;
             margin-top: 20px;
         }
         .chart {
-            height: 200px;  /* Smaller height for all charts */
+            height: 100%;
         }
         h1 {
             color: #76b900; /* NVIDIA green */
@@ -165,11 +166,11 @@
         function createConcentrationChart(data, divId) {
             const trace = {
                 x: data.map(d => d.quarter),
-                y: data.map(d => d.customer_concentration[0].percentage),
+                y: data.map(d => d.customer_concentration),
                 type: 'scatter',
                 mode: 'lines+markers',
                 line: {color: '#fbbc04'},
-                name: 'Largest Customer %'
+                name: 'Customer Concentration'
             };
 
             const layout = {
