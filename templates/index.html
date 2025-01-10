@@ -24,13 +24,59 @@
             color: #76b900; /* NVIDIA green */
             text-align: center;
         }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .metric-title {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        .growth-positive {
+            color: #76b900;
+        }
+        .growth-negative {
+            color: #ea4335;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>NVIDIA Financial Metrics</h1>
+        
+        <!-- Latest Quarter Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-title">Latest Quarter Revenue</div>
+                <div class="metric-value" id="latest-revenue">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">QoQ Growth</div>
+                <div class="metric-value" id="qoq-growth">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">YoY Growth</div>
+                <div class="metric-value" id="yoy-growth">-</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
         <div id="revenueChart" class="chart"></div>
-        <div id="netIncomeChart" class="chart"></div>
+        <div id="growthChart" class="chart"></div>
         <div id="marginChart" class="chart"></div>
     </div>
 
@@ -38,12 +84,29 @@
         async function fetchData() {
             const response = await fetch('/api/nvidia');
             const data = await response.json();
-            // Sort data chronologically
             return data.data.sort((a, b) => {
                 const [yearA, quarterA] = [parseInt(a.quarter.slice(0,4)), parseInt(a.quarter.slice(5))];
                 const [yearB, quarterB] = [parseInt(b.quarter.slice(0,4)), parseInt(b.quarter.slice(5))];
                 return (yearA - yearB) || (quarterA - quarterB);
             });
+        }
+
+        function formatGrowth(value) {
+            if (value === null) return '-';
+            return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+        }
+
+        function updateMetricCards(data) {
+            const latest = data[data.length - 1];
+            document.getElementById('latest-revenue').textContent = `$${(latest.revenue / 1e9).toFixed(2)}B`;
+            
+            const qoqElement = document.getElementById('qoq-growth');
+            qoqElement.textContent = formatGrowth(latest.revenue_qoq);
+            qoqElement.className = `metric-value ${latest.revenue_qoq >= 0 ? 'growth-positive' : 'growth-negative'}`;
+            
+            const yoyElement = document.getElementById('yoy-growth');
+            yoyElement.textContent = formatGrowth(latest.revenue_yoy);
+            yoyElement.className = `metric-value ${latest.revenue_yoy >= 0 ? 'growth-positive' : 'growth-negative'}`;
         }
 
         function createChart(data, metric, title, divId, color) {
@@ -63,8 +126,9 @@
                     tickangle: -45
                 },
                 yaxis: {
-                    title: metric === 'gross_margin' ? 'Percentage (%)' : 'Billions USD',
-                    tickformat: metric === 'gross_margin' ? '.1f' : '.2f'
+                    title: metric.includes('growth') ? 'Growth Rate (%)' : 
+                          (metric === 'gross_margin' ? 'Percentage (%)' : 'Billions USD'),
+                    tickformat: metric.includes('growth') ? '+.1f' : '.2f'
                 },
                 showlegend: false,
                 margin: {
@@ -79,14 +143,18 @@
         async function initCharts() {
             const data = await fetchData();
             
-            // Convert revenue and net income to billions
+            // Convert revenue to billions
             data.forEach(d => {
                 d.revenue = d.revenue / 1e9;
                 d.net_income = d.net_income / 1e9;
             });
 
+            // Update metric cards
+            updateMetricCards(data);
+
+            // Create charts
             createChart(data, 'revenue', 'Quarterly Revenue', 'revenueChart', '#76b900');
-            createChart(data, 'net_income', 'Net Income', 'netIncomeChart', '#1a73e8');
+            createChart(data, 'revenue_qoq', 'Quarter-over-Quarter Growth', 'growthChart', '#1a73e8');
             createChart(data, 'gross_margin', 'Gross Margin', 'marginChart', '#ea4335');
         }
 
