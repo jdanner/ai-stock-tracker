@@ -70,14 +70,14 @@ async def fetch_nvidia_data():
     try:
         # NVIDIA quarterly revenue data from official earnings releases
         real_data = [
-            {'quarter': '2025Q3', 'revenue': 35082000000, 'net_income': 9243000000, 'gross_margin': 74.0},  # Current
-            {'quarter': '2025Q2', 'revenue': 30040000000, 'net_income': 6188000000, 'gross_margin': 70.1},
-            {'quarter': '2025Q1', 'revenue': 26044000000, 'net_income': 2043000000, 'gross_margin': 64.6},
-            {'quarter': '2024Q4', 'revenue': 22103000000, 'net_income': 1410000000, 'gross_margin': 63.3},
-            {'quarter': '2024Q3', 'revenue': 18120000000, 'net_income': 1336000000, 'gross_margin': 62.7},
-            {'quarter': '2024Q2', 'revenue': 13507000000, 'net_income': 1618000000, 'gross_margin': 64.8},
-            {'quarter': '2024Q1', 'revenue': 7192000000, 'net_income': 1912000000, 'gross_margin': 65.5},
-            {'quarter': '2023Q4', 'revenue': 6051000000, 'net_income': 1788000000, 'gross_margin': 65.4},
+            {'quarter': '2025Q3', 'revenue': 35082000000, 'net_income': 9243000000, 'gross_margin': 74.0, 'datacenter_pct': 87.7},  # 30771/35082
+            {'quarter': '2025Q2', 'revenue': 30040000000, 'net_income': 6188000000, 'gross_margin': 70.1, 'datacenter_pct': 87.5},  # 26272/30040
+            {'quarter': '2025Q1', 'revenue': 26044000000, 'net_income': 2043000000, 'gross_margin': 64.6, 'datacenter_pct': 86.6},  # 22563/26044
+            {'quarter': '2024Q4', 'revenue': 22103000000, 'net_income': 1410000000, 'gross_margin': 63.3, 'datacenter_pct': 83.3},  # 18404/22103
+            {'quarter': '2024Q3', 'revenue': 18120000000, 'net_income': 1336000000, 'gross_margin': 62.7, 'datacenter_pct': 80.1},  # 14514/18120
+            {'quarter': '2024Q2', 'revenue': 13507000000, 'net_income': 1618000000, 'gross_margin': 64.8, 'datacenter_pct': 76.4},  # 10323/13507
+            {'quarter': '2024Q1', 'revenue': 7192000000, 'net_income': 1912000000, 'gross_margin': 65.5, 'datacenter_pct': 59.6},   # 4284/7192
+            {'quarter': '2023Q4', 'revenue': 6051000000, 'net_income': 1788000000, 'gross_margin': 65.4, 'datacenter_pct': 59.8},   # 3616/6051
         ]
         
         # Calculate growth rates
