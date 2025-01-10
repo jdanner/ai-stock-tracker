@@ -105,7 +105,13 @@
         }
 
         function updateMetricCards(data) {
-            const latest = data[data.length - 1];
+            // Get latest quarter by finding max year and quarter
+            const latest = data.reduce((latest, current) => {
+                const [latestYear, latestQ] = [parseInt(latest.quarter.slice(0,4)), parseInt(latest.quarter.slice(5))];
+                const [currentYear, currentQ] = [parseInt(current.quarter.slice(0,4)), parseInt(current.quarter.slice(5))];
+                return (currentYear > latestYear || (currentYear === latestYear && currentQ > latestQ)) ? current : latest;
+            }, data[0]);
+            
             document.getElementById('latest-revenue').textContent = `$${(latest.revenue / 1e9).toFixed(2)}B`;
             
             const qoqElement = document.getElementById('qoq-growth');
