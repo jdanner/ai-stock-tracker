@@ -162,6 +162,45 @@
             Plotly.newPlot(divId, [trace], layout, config);
         }
 
+        function createConcentrationChart(data, divId) {
+            const trace = {
+                x: data.map(d => d.quarter),
+                y: data.map(d => d.customer_concentration[0].percentage),
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: {color: '#fbbc04'},
+                name: 'Largest Customer %'
+            };
+
+            const layout = {
+                title: 'Customer Concentration',
+                xaxis: {
+                    title: 'Quarter',
+                    tickangle: -45
+                },
+                yaxis: {
+                    title: 'Revenue %',
+                    tickformat: '.1f'
+                },
+                showlegend: false,
+                margin: {
+                    l: 50,
+                    r: 20,
+                    b: 50,
+                    t: 30,
+                    pad: 4
+                },
+                autosize: true
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: false
+            };
+
+            Plotly.newPlot(divId, [trace], layout, config);
+        }
+
         async function initCharts() {
             const data = await fetchData();
             
@@ -178,7 +217,7 @@
             createChart(data, 'revenue', 'Quarterly Revenue', 'revenueChart', '#76b900');
             createChart(data, 'revenue_qoq', 'QoQ Growth', 'growthChart', '#1a73e8');
             createChart(data, 'gross_margin', 'Gross Margin', 'marginChart', '#ea4335');
-            createChart(data, 'datacenter_pct', 'Data Center %', 'concentrationChart', '#fbbc04');
+            createConcentrationChart(data, 'concentrationChart');
         }
 
         initCharts();
