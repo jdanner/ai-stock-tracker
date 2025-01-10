@@ -63,13 +63,12 @@
 <body>
     <div class="container">
         <h1>NVIDIA Financial Metrics</h1>
+        <div class="source-link">
+            <a href="https://investor.nvidia.com/financial-info/financial-reports/default.aspx" target="_blank">Data Source: NVIDIA Investor Relations</a>
+        </div>
         
         <!-- Latest Quarter Metrics -->
         <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-title">Latest Quarter Revenue</div>
-                <div class="metric-value" id="latest-revenue">-</div>
-            </div>
             <div class="metric-card">
                 <div class="metric-title">QoQ Growth</div>
                 <div class="metric-value" id="qoq-growth">-</div>
@@ -105,12 +104,14 @@
         }
 
         function updateMetricCards(data) {
-            // Get latest quarter by finding max year and quarter
-            const latest = data.reduce((latest, current) => {
-                const [latestYear, latestQ] = [parseInt(latest.quarter.slice(0,4)), parseInt(latest.quarter.slice(5))];
-                const [currentYear, currentQ] = [parseInt(current.quarter.slice(0,4)), parseInt(current.quarter.slice(5))];
-                return (currentYear > latestYear || (currentYear === latestYear && currentQ > latestQ)) ? current : latest;
-            }, data[0]);
+            // Sort by quarter to get the latest
+            const sortedData = [...data].sort((a, b) => {
+                const [yearA, quarterA] = [parseInt(a.quarter.slice(0,4)), parseInt(a.quarter.slice(5))];
+                const [yearB, quarterB] = [parseInt(b.quarter.slice(0,4)), parseInt(b.quarter.slice(5))];
+                return (yearB - yearA) || (quarterB - quarterA);
+            });
+            
+            const latest = sortedData[0];  // Now truly the latest quarter
             
             document.getElementById('latest-revenue').textContent = `$${(latest.revenue / 1e9).toFixed(2)}B`;
             
