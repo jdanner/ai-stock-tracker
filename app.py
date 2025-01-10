@@ -109,6 +109,10 @@ async def fetch_nvidia_data():
             {'quarter': '2023Q3', 'revenue': 14510000000, 'net_income': 7186000000, 'gross_margin': 74.0},
             {'quarter': '2023Q2', 'revenue': 13507000000, 'net_income': 6188000000, 'gross_margin': 70.1},
             {'quarter': '2023Q1', 'revenue': 7192000000, 'net_income': 2043000000, 'gross_margin': 64.6},
+            {'quarter': '2022Q4', 'revenue': 6050000000, 'net_income': 1410000000, 'gross_margin': 63.3},
+            {'quarter': '2022Q3', 'revenue': 5931000000, 'net_income': 1336000000, 'gross_margin': 62.7},
+            {'quarter': '2022Q2', 'revenue': 6704000000, 'net_income': 1618000000, 'gross_margin': 64.8},
+            {'quarter': '2022Q1', 'revenue': 7640000000, 'net_income': 1912000000, 'gross_margin': 65.5},
         ]
         return calculate_growth_rates(mock_data)
 
