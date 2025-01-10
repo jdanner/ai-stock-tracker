@@ -19,12 +19,12 @@
         }
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-top: 20px;
         }
         .chart {
-            height: 250px;  /* Fixed height for all charts */
+            height: 200px;  /* Smaller height for all charts */
         }
         h1 {
             color: #76b900; /* NVIDIA green */
@@ -84,6 +84,7 @@
             <div id="revenueChart" class="chart"></div>
             <div id="growthChart" class="chart"></div>
             <div id="marginChart" class="chart"></div>
+            <div id="concentrationChart" class="chart"></div>
         </div>
     </div>
 
@@ -104,16 +105,13 @@
         }
 
         function updateMetricCards(data) {
-            // Sort by quarter to get the latest
             const sortedData = [...data].sort((a, b) => {
                 const [yearA, quarterA] = [parseInt(a.quarter.slice(0,4)), parseInt(a.quarter.slice(5))];
                 const [yearB, quarterB] = [parseInt(b.quarter.slice(0,4)), parseInt(b.quarter.slice(5))];
                 return (yearB - yearA) || (quarterB - quarterA);
             });
             
-            const latest = sortedData[0];  // Now truly the latest quarter
-            
-            document.getElementById('latest-revenue').textContent = `$${(latest.revenue / 1e9).toFixed(2)}B`;
+            const latest = sortedData[0];
             
             const qoqElement = document.getElementById('qoq-growth');
             qoqElement.textContent = formatGrowth(latest.revenue_qoq);
@@ -178,8 +176,9 @@
 
             // Create charts
             createChart(data, 'revenue', 'Quarterly Revenue', 'revenueChart', '#76b900');
-            createChart(data, 'revenue_qoq', 'Quarter-over-Quarter Growth', 'growthChart', '#1a73e8');
+            createChart(data, 'revenue_qoq', 'QoQ Growth', 'growthChart', '#1a73e8');
             createChart(data, 'gross_margin', 'Gross Margin', 'marginChart', '#ea4335');
+            createChart(data, 'datacenter_pct', 'Data Center %', 'concentrationChart', '#fbbc04');
         }
 
         initCharts();
