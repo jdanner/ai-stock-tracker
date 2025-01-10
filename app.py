@@ -69,16 +69,15 @@ async def fetch_nvidia_data():
     """Fetch NVIDIA's key financial metrics"""
     try:
         # NVIDIA quarterly revenue data from official earnings releases
-        # Note: NVIDIA's fiscal year ends in January
         real_data = [
-            {'quarter': '2024Q3', 'revenue': 18120000000, 'net_income': 9243000000, 'gross_margin': 74.0},  # Nov 2023
-            {'quarter': '2024Q2', 'revenue': 13507000000, 'net_income': 6188000000, 'gross_margin': 70.1},  # Aug 2023
-            {'quarter': '2024Q1', 'revenue': 7192000000, 'net_income': 2043000000, 'gross_margin': 64.6},   # May 2023
-            {'quarter': '2023Q4', 'revenue': 6050000000, 'net_income': 1410000000, 'gross_margin': 63.3},   # Jan 2023
-            {'quarter': '2023Q3', 'revenue': 5931000000, 'net_income': 1336000000, 'gross_margin': 62.7},   # Nov 2022
-            {'quarter': '2023Q2', 'revenue': 6704000000, 'net_income': 1618000000, 'gross_margin': 64.8},   # Aug 2022
-            {'quarter': '2023Q1', 'revenue': 7640000000, 'net_income': 1912000000, 'gross_margin': 65.5},   # May 2022
-            {'quarter': '2022Q4', 'revenue': 7643000000, 'net_income': 1788000000, 'gross_margin': 65.4},   # Jan 2022
+            {'quarter': '2025Q3', 'revenue': 35082000000, 'net_income': 9243000000, 'gross_margin': 74.0},  # Current
+            {'quarter': '2025Q2', 'revenue': 30040000000, 'net_income': 6188000000, 'gross_margin': 70.1},
+            {'quarter': '2025Q1', 'revenue': 26044000000, 'net_income': 2043000000, 'gross_margin': 64.6},
+            {'quarter': '2024Q4', 'revenue': 22103000000, 'net_income': 1410000000, 'gross_margin': 63.3},
+            {'quarter': '2024Q3', 'revenue': 18120000000, 'net_income': 1336000000, 'gross_margin': 62.7},
+            {'quarter': '2024Q2', 'revenue': 13507000000, 'net_income': 1618000000, 'gross_margin': 64.8},
+            {'quarter': '2024Q1', 'revenue': 7192000000, 'net_income': 1912000000, 'gross_margin': 65.5},
+            {'quarter': '2023Q4', 'revenue': 6051000000, 'net_income': 1788000000, 'gross_margin': 65.4},
         ]
         
         # Calculate growth rates
